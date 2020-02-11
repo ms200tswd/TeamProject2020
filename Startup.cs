@@ -13,6 +13,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using TeamProject.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace TeamProject
 {
     public class Startup
@@ -32,7 +35,11 @@ namespace TeamProject
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddControllersWithViews();
+
+            services.AddDbContext<TeamProjectContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("TeamProjectContext")));
+        
+        services.AddControllersWithViews();
             services.AddRazorPages();
         }
 

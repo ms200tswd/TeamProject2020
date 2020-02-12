@@ -18,5 +18,10 @@ namespace TeamProject.Data
         public DbSet<Tour> Tours { get; set; }
         public DbSet<Summary> Summaries { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Summary>().HasKey(s => new { s.TourId, s.UserId });
+        }
+
     }
 }

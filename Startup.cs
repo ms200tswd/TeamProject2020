@@ -37,7 +37,7 @@ namespace TeamProject
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddDbContext<TeamProjectContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("TeamProjectContext")));
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         
         services.AddControllersWithViews();
             services.AddRazorPages();

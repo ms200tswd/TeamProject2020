@@ -10,22 +10,23 @@ using TeamProject.Models;
 
 namespace TeamProject.Controllers
 {
-    public class TourController : Controller
+    public class SummaryController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public TourController(ApplicationDbContext context)
+        public SummaryController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Tour
+        // GET: Summary
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Tours.ToListAsync());
+            var applicationDbContext = _context.Summaries.Include(s => s.Tour).Include(s => s.User);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Tour/Details/5
+        // GET: Summary/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,39 +34,45 @@ namespace TeamProject.Controllers
                 return NotFound();
             }
 
-            var tour = await _context.Tours
+            var summary = await _context.Summaries
+                .Include(s => s.Tour)
+                .Include(s => s.User)
                 .FirstOrDefaultAsync(m => m.TourId == id);
-            if (tour == null)
+            if (summary == null)
             {
                 return NotFound();
             }
 
-            return View(tour);
+            return View(summary);
         }
 
-        // GET: Tour/Create
+        // GET: Summary/Create
         public IActionResult Create()
         {
+            ViewData["TourId"] = new SelectList(_context.Tours, "TourId", "Destination");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
-        // POST: Tour/Create
+        // POST: Summary/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TourId,Destination,Price,Departure,Arrival")] Tour tour)
+        public async Task<IActionResult> Create([Bind("TourId,UserId")] Summary summary)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(tour);
+                _context.Add(summary);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(tour);
+            ViewData["TourId"] = new SelectList(_context.Tours, "TourId", "Destination", summary.TourId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", summary.UserId);
+            return View(summary);
         }
 
-        // GET: Tour/Edit/5
+        // GET: Summary/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,22 +80,24 @@ namespace TeamProject.Controllers
                 return NotFound();
             }
 
-            var tour = await _context.Tours.FindAsync(id);
-            if (tour == null)
+            var summary = await _context.Summaries.FindAsync(id);
+            if (summary == null)
             {
                 return NotFound();
             }
-            return View(tour);
+            ViewData["TourId"] = new SelectList(_context.Tours, "TourId", "Destination", summary.TourId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", summary.UserId);
+            return View(summary);
         }
 
-        // POST: Tour/Edit/5
+        // POST: Summary/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TourId,Destination,Price,Departure,Arrival")] Tour tour)
+        public async Task<IActionResult> Edit(int id, [Bind("TourId,UserId")] Summary summary)
         {
-            if (id != tour.TourId)
+            if (id != summary.TourId)
             {
                 return NotFound();
             }
@@ -97,12 +106,12 @@ namespace TeamProject.Controllers
             {
                 try
                 {
-                    _context.Update(tour);
+                    _context.Update(summary);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TourExists(tour.TourId))
+                    if (!SummaryExists(summary.TourId))
                     {
                         return NotFound();
                     }
@@ -113,10 +122,12 @@ namespace TeamProject.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(tour);
+            ViewData["TourId"] = new SelectList(_context.Tours, "TourId", "Destination", summary.TourId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", summary.UserId);
+            return View(summary);
         }
 
-        // GET: Tour/Delete/5
+        // GET: Summary/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,30 +135,32 @@ namespace TeamProject.Controllers
                 return NotFound();
             }
 
-            var tour = await _context.Tours
+            var summary = await _context.Summaries
+                .Include(s => s.Tour)
+                .Include(s => s.User)
                 .FirstOrDefaultAsync(m => m.TourId == id);
-            if (tour == null)
+            if (summary == null)
             {
                 return NotFound();
             }
 
-            return View(tour);
+            return View(summary);
         }
 
-        // POST: Tour/Delete/5
+        // POST: Summary/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var tour = await _context.Tours.FindAsync(id);
-            _context.Tours.Remove(tour);
+            var summary = await _context.Summaries.FindAsync(id);
+            _context.Summaries.Remove(summary);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool TourExists(int id)
+        private bool SummaryExists(int id)
         {
-            return _context.Tours.Any(e => e.TourId == id);
+            return _context.Summaries.Any(e => e.TourId == id);
         }
     }
 }

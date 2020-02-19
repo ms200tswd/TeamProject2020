@@ -7,11 +7,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TeamProject.Models;
+using System;
 
 namespace TeamProject
 {
     public class Startup
     {
+        //private string _adminUserPW = null;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -42,7 +44,7 @@ namespace TeamProject
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env /*, IServiceProvider serviceProvider*/)
         {
             if (env.IsDevelopment())
             {
@@ -62,6 +64,9 @@ namespace TeamProject
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            //_adminUserPW = Configuration["adminUserPW"];
+            //IdentityDbInitializer.Initialize(serviceProvider, _adminUserPW).Wait();
 
             app.UseEndpoints(endpoints =>
             {
